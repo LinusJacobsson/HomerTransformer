@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer
+from network import LinearLayer, ApproxGELU
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -45,6 +45,19 @@ class TestLinearLayer(unittest.TestCase):
             self.layer(x)
 
 
+
+class TestApproximateGELU(unittest.TestCase):
+
+    def setUp(self):
+        self.activation = ApproxGELU()
+
+
+    def test_forward_shape(self):
+        # Test that shapes agree
+        x = torch.randn(10, 5)
+        output = self.activation(x)
+        self.assertEqual(x.shape, output.shape, 'Output shape must match the input shape')
+    
 
 if __name__ == '__main__':
     unittest.main()
