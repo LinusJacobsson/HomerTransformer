@@ -24,12 +24,11 @@ class TestLinearLayer(unittest.TestCase):
     def test_paramters(self):
         # Check that parameters work correctly
         parameters = list(self.layer.parameters())
-        print(parameters)
         self.assertEqual(len(parameters), 2, 'LinearLayer should have 2 sets of parameters: weights and biases')
-        self.assertEqual(parameters[0], (self.input_dim, self.output_dim), "Weights should be (input_dim, output_dim)")
-        self.assertEqual(parameters[1], (self.output_dim, ), 'Biases should have shape (output_dim, )') 
-       
+        self.assertEqual(parameters[0].shape, (self.input_dim, self.output_dim), "Weights should be (input_dim, output_dim)")
+        self.assertEqual(parameters[1].shape, (self.output_dim, ), 'Biases should have shape (output_dim, )') 
+        
 
-       
+
 if __name__ == '__main__':
     unittest.main()
