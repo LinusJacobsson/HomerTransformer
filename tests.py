@@ -38,5 +38,11 @@ class TestLinearLayer(unittest.TestCase):
         self.assertIsNotNone(self.layer.weights.grad, 'Gradients should exist.')
         self.assertIsNone(self.layer.bias.grad, 'Gradients should exist.')
 
+
+    def test_empty_tensor(self):
+        x = torch.empty(0, self.input_dim)
+        with self.assertRaises(RuntimeError):
+            self.layer(x)
+
 if __name__ == '__main__':
     unittest.main()
