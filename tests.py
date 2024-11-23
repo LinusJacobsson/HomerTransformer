@@ -27,8 +27,16 @@ class TestLinearLayer(unittest.TestCase):
         self.assertEqual(len(parameters), 2, 'LinearLayer should have 2 sets of parameters: weights and biases')
         self.assertEqual(parameters[0].shape, (self.input_dim, self.output_dim), "Weights should be (input_dim, output_dim)")
         self.assertEqual(parameters[1].shape, (self.output_dim, ), 'Biases should have shape (output_dim, )') 
-        
 
+    
+    def test_gradient(self):
+        x = torch.randn(2, self.input_dim, requires_grad=True)
+        output = self.layer(x)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(x.grad, 'Gradients should exist.')
+        self.assertIsNotNone(self.layer.weights.grad, 'Gradients should exist.')
+        self.assertIsNone(self.layer.bias.grad, 'Gradients should exist.')
 
 if __name__ == '__main__':
     unittest.main()
