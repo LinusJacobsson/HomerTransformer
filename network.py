@@ -17,3 +17,16 @@ class LinearLayer(nn.Module):
 
 
 
+class ApproxGELU(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def tanh(self, x):
+        return (torch.exp(x) - torch.exp(-x) / (torch.exp(x) + torch.exp(-x)))
+    
+
+    def forward(self, x):
+        # Approximate according to: https://arxiv.org/pdf/1606.08415
+        return 0.5*x*(1 + self.tanh(x)*(torch.sqrt(2/torch.pi)*(x + 0.044715*x**3)))
+    
+    
