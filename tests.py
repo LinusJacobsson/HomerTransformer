@@ -59,5 +59,23 @@ class TestApproximateGELU(unittest.TestCase):
         self.assertEqual(x.shape, output.shape, 'Output shape must match the input shape')
     
 
+    def test_forward_values(self):
+        x = torch.tensor([-2.0, -1.0, 0.0, 1.0, 2.0], requires_grad=True)
+        output = self.activation(x)
+        print(f'Input x: {x}')
+        print(f'Approx GELU output: {output}')
+
+        # Detailed checks:
+        for i, (out, inp) in enumerate(zip(output, x)):
+            print(f"Index {i}: Output = {out}, Input = {inp}")
+            if inp < 0:
+                # For negative inputs, output should be closer to zero than the input
+                self.assertTrue(out > inp, f"At index {i}, output {out} should be greater than input {inp} for negative x")
+            else:
+                # For non-negative inputs, output should not exceed the input
+                self.assertTrue(out <= inp, f"At index {i}, output {out} should not exceed input {inp} for positive x")
+
+
+                        
 if __name__ == '__main__':
     unittest.main()
