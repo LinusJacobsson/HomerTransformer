@@ -11,7 +11,9 @@ class LinearLayer(nn.Module):
 
 
     def forward(self, x):
-        return x @ self.weights + self.bias
+        if x.shape[0] == 0:
+            raise RuntimeError("Tensor has no data (empty batch dimension)")
+        return torch.matmul(x, self.weights) + self.bias
 
 
 
