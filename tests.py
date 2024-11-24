@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm
+from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -215,12 +215,29 @@ class TestLayerNorm(unittest.TestCase):
         print(f'Output: {output}')
         self.assertTrue(torch.allclose(output, torch.zeros_like(output), atol=1e-10), 'Scalar should be normalized to 0.')
 
+
+class TestAddAndNorm(unittest.TestCase):
+
+    def setUp(self):
+        self.d_model = 16
+        self.layer = AddAndNorm(self.d_model)
+    
+
+    def test_output_shape(self):
+        batch_size, context_length = 10, 8
+        x = torch.randn(batch_size, context_length, self.d_model)
+        sublayer_output = torch.randn(batch_size, context_length, self.d_model)
+        output = self.layer(x, sublayer_output)
+        self.assertEqual(x.shape, output.shape, 'Input shape and output shape must match.')
+
+
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
     # Load specific test methods
     tests = loader.loadTestsFromNames([
-        'tests.TestLayerNorm.test_single_element'
+        'tests.TestAddAndNorm'
     ])
 
     # Run the selected tests
