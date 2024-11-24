@@ -201,6 +201,14 @@ class TestLayerNorm(unittest.TestCase):
         self.assertIsNotNone(self.layer_norm.gamma.grad, 'Gradient for gamma should exist.')
         self.assertIsNotNone(self.layer_norm.beta.grad, 'Gradient for beta should exist.')
 
-        
+
+    def test_empty_tensor(self):
+        x = torch.empty(0, 0, self.d_model) # Empty tensor
+        with self.assertRaises(RuntimeError):
+            self.layer_norm(x)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
