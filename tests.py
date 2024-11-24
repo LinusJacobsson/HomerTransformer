@@ -94,6 +94,18 @@ class TestApproximateGELU(unittest.TestCase):
         print(f'Build_in GELU: {output_built_in}')
     
 
+    def test_edge_cases(self):
+        
+        large_value = torch.tensor(1e6, requires_grad=True)
+        small_value = torch.tensor(1e-6, requires_grad=True)
+
+        large_output = self.activation(large_value)
+        small_output = self.activation(small_value)
+        print(f'Large output size: {large_output}')
+        self.assertAlmostEqual(large_value.item(), large_output.item(), delta=1e-3, msg='Values should be of similar size.')
+        self.assertAlmostEqual(0, small_output.item(), delta=1e-3, msg='Answer should be close to 0')
+
+
 
 if __name__ == '__main__':
     unittest.main()
