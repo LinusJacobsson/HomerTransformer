@@ -23,16 +23,18 @@ class FeedForwardBlock(nn.Module):
         self.activation1 = ApproxGELU()
         self.linear2 = LinearLayer(d_ff, d_model)
 
+
     def forward(self, x):
         x = self.linear1(x)
         x = self.activation1(x)
         x = self.linear2(x)
-
+        return x
 
 class ApproxGELU(nn.Module):
     def __init__(self):
         super().__init__()
     
+
     def tanh(self, x):
         return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
     
