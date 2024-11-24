@@ -178,8 +178,8 @@ class TestLayerNorm(unittest.TestCase):
 
         output_mean = output.mean(dim=-1)
         output_var = output.var(dim=-1)
-        print(f'Output mean: {output_mean}')
-        print(f'Output variance: {output_var}')
+        #print(f'Output mean: {output_mean}')
+        #print(f'Output variance: {output_var}')
         self.assertTrue(torch.allclose(output_mean, torch.zeros_like(output_mean), atol=1e-6), 'Mean should be close to zero.')
         self.assertTrue(torch.allclose(output_var, torch.ones_like(output_var), atol=1e-6), 'Variance should be close to 1')
 
@@ -208,7 +208,21 @@ class TestLayerNorm(unittest.TestCase):
             self.layer_norm(x)
 
 
-
+    def test_single_element(self):
+        x = torch.tensor([5.0])
+        layer_norm = LayerNorm(1)
+        output = layer_norm(x)
+        print(f'Output: {output}')
+        self.assertTrue(torch.allclose(output, torch.zeros_like(output), atol=1e-10), 'Scalar should be normalized to 0.')
 
 if __name__ == '__main__':
-    unittest.main()
+    loader = unittest.TestLoader()
+
+    # Load specific test methods
+    tests = loader.loadTestsFromNames([
+        'tests.TestLayerNorm.test_single_element'
+    ])
+
+    # Run the selected tests
+    runner = unittest.TextTestRunner()
+    runner.run(tests)
