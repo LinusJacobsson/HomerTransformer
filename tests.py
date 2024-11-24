@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU
+from network import LinearLayer, ApproxGELU, FeedForwardBlock
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -115,6 +115,22 @@ class TestApproximateGELU(unittest.TestCase):
         print(f'Torch tanh: {expected_output}')
         self.assertTrue(torch.allclose(tanh_output, expected_output, atol=1e-6))
         
+
+
+class TestFeedForwardBlock(unittest.TestCase):
+
+    def setUp(self):
+        self.d_model = 16
+        self.d_ff = 64
+        self.block = FeedForwardBlock(d_model=self.d_model, d_ff=self.d_ff)
+    
+
+    def test_forward_shape(self):
+
+        batch_size, context_length = 8, 10
+        x = torch.randn(batch_size, context_length, self.d_model)
+        output = self.block(x)
+        self.assertEqual(output.shape, x.shape, 'Shape should be the same after forward pass')
 
 if __name__ == '__main__':
     unittest.main()
