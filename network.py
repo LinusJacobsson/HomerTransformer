@@ -16,6 +16,18 @@ class LinearLayer(nn.Module):
         return torch.matmul(x, self.weights) + self.bias
 
 
+class FeedForwardBlock(nn.Module):
+    def __init__(self, d_model, d_ff):
+        super().__init__()
+        self.linear1 = LinearLayer(d_model, d_ff)
+        self.activation1 = ApproxGELU()
+        self.linear2 = LinearLayer(d_ff, d_model)
+
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.activation1(x)
+        x = self.linear2(x)
+
 
 class ApproxGELU(nn.Module):
     def __init__(self):
