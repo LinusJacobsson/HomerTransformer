@@ -76,6 +76,15 @@ class TestApproximateGELU(unittest.TestCase):
                 self.assertTrue(out <= inp, f"At index {i}, output {out} should not exceed input {inp} for positive x")
 
 
-                        
+    def test_gradient(self):
+        x = torch.randn(5, requires_grad=True)
+        output = self.activation(x)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(x.grad, 'Gradients for x should exist.')
+        print(f'Gradient of x: {x.grad}')
+    
+
+
 if __name__ == '__main__':
     unittest.main()
