@@ -247,6 +247,18 @@ class TestAddAndNorm(unittest.TestCase):
         output = self.layer(x, sublayer_output)
         self.assertTrue(torch.allclose(output, torch.zeros_like(output), atol=1e-6), "Output should be zero when inputs are zero")
 
+
+
+    def test_single_element_tensor(self):
+        add_and_norm = AddAndNorm(d_model=1)
+        x = torch.tensor([[5.0]])
+        sublayer_output = torch.tensor([[3.0]])
+        output = add_and_norm(x, sublayer_output)
+        print(f'Output mean: {output.mean()}')
+        print(f'Output var: {output.var()}')
+        self.assertTrue(torch.allclose(output.mean(), torch.tensor(0.0), atol=1e-6), "Mean should be 0 after normalization")
+        self.assertTrue(output.var(unbiased=False).isnan() or output.var(unbiased=False) == 0, "Variance should be zero for scalar input.")
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
