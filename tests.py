@@ -141,5 +141,15 @@ class TestFeedForwardBlock(unittest.TestCase):
 
 
 
+    def test_gradients(self):
+        x = torch.randn(4, 6, self.d_model, requires_grad=True) # batch size = 4, context length = 6
+        output = self.block(x)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(x.grad, 'Gradient for x should exist.')
+        for params in self.block.parameters():
+            self.assertIsNotNone(params.grad, 'Gradients should exist for all parameters.')
+
+    
 if __name__ == '__main__':
     unittest.main()
