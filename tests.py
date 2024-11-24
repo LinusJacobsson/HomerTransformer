@@ -106,6 +106,15 @@ class TestApproximateGELU(unittest.TestCase):
         self.assertAlmostEqual(0, small_output.item(), delta=1e-3, msg='Answer should be close to 0')
 
 
+    def test_tanh(self):
+
+        x = torch.tensor([-1.0, 1.0, -1.0])
+        tanh_output = self.activation.tanh(x)
+        expected_output = torch.tanh(x)
+        print(f'Custom tanh: {tanh_output}')
+        print(f'Torch tanh: {expected_output}')
+        self.assertTrue(torch.allclose(tanh_output, expected_output, atol=1e-6))
+        
 
 if __name__ == '__main__':
     unittest.main()
