@@ -231,6 +231,15 @@ class TestAddAndNorm(unittest.TestCase):
         self.assertEqual(x.shape, output.shape, 'Input shape and output shape must match.')
 
 
+    def test_gradient_flow(self):
+        x = torch.randn(4, 5, self.d_model, requires_grad=True)
+        sublayer_output = torch.randn(4, 5, self.d_model, requires_grad=True)
+        output = self.layer(x, sublayer_output)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(x.grad, "Gradients for x should exist")
+        self.assertIsNotNone(sublayer_output.grad, "Gradients for sublayer_output should exist")
+
 
 if __name__ == '__main__':
     loader = unittest.TestLoader()
