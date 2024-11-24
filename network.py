@@ -56,6 +56,18 @@ class LayerNorm(nn.Module):
         # Scale and shift
         return self.gamma * x_normalized + self.beta
 
+
+class AddAndNorm(nn.Module):
+    def __init__(self, d_model):
+        super().__init__()
+        self.norm = LayerNorm(d_model=d_model)
+
+
+    def forward(self, x, sublayer_output):
+        return self.norm(x + sublayer_output)
+
+
+
 class ApproxGELU(nn.Module):
     def __init__(self):
         super().__init__()
