@@ -241,6 +241,12 @@ class TestAddAndNorm(unittest.TestCase):
         self.assertIsNotNone(sublayer_output.grad, "Gradients for sublayer_output should exist")
 
 
+    def test_zero_input(self):
+        x = torch.zeros(4, 5, self.d_model)
+        sublayer_output = torch.zeros(4, 5, self.d_model)
+        output = self.layer(x, sublayer_output)
+        self.assertTrue(torch.allclose(output, torch.zeros_like(output), atol=1e-6), "Output should be zero when inputs are zero")
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
