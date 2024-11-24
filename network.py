@@ -41,11 +41,20 @@ class LayerNorm(nn.Module):
 
     
     def forward(self, x):
-        x_mean = torch.mean(x, -1)
-        x_variance = torch.var(x, -1)
-        normal_term = torch.sqrt(x_variance**2 + self.epsilon) * self.gamma
-        x = (x - x_mean) * normal_term + self.beta
-        return x
+        if x.shape[0] == 0:
+            raise RuntimeError("Tensor has no data (empty batch dimension)")
+        # Compute mean and variance along the last dimension
+        x_mean = x.mean(dim=-1, keepdim=True)
+
+        if x.size(-1) == 1:
+            # Return normalized value directly (gamma * 0 + beta)
+            return self.gamma * 0 + self.beta
+        
+        x_var = x.var(dim=-1, keepdim=True)
+        # Normalize
+        x_normalized = (x - x_mean) / torch.sqrt(x_var + self.epsilon)
+        # Scale and shift
+        return self.gamma * x_normalized + self.beta
 
 class ApproxGELU(nn.Module):
     def __init__(self):
