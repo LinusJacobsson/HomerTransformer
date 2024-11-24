@@ -83,6 +83,15 @@ class TestApproximateGELU(unittest.TestCase):
         loss.backward()
         self.assertIsNotNone(x.grad, 'Gradients for x should exist.')
         print(f'Gradient of x: {x.grad}')
+
+    
+    def test_gelu_comparasion(self):
+        x = torch.randn(10)
+        output_custom = self.activation(x)
+        output_built_in = F.gelu(x)
+        self.assertTrue(torch.allclose(output_custom, output_built_in, atol=1e-3), 'Outputs should differ less than 1e-3')
+        print(f'Approx GELU: {output_custom}')
+        print(f'Build_in GELU: {output_built_in}')
     
 
 
