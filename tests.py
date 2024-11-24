@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU, FeedForwardBlock
+from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -155,6 +155,34 @@ class TestFeedForwardBlock(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.block(x)
     
+
+
+class TestLayerNorm(unittest.TestCase):
     
+    def setUp(self):
+        self.d_model = 16
+        self.layer_norm = LayerNorm(d_model=self.d_model)
+
+    
+    def test_output_shape(self):
+        batch_size, context_length = 8, 10
+        x = torch.randn(batch_size, context_length, self.d_model)
+        output = self.layer_norm(x)
+        self.assertEqual(x.shape, output.shape, 'Shape must be same after forward pass.')
+
+
+    def test_output_values(self):
+        batch_size, context_length = 8, 10
+        x = torch.randn(batch_size, context_length, self.d_model) # Shape (8, 10, 16)
+        output = self.layer_norm(x)
+
+        output_mean = output.mean(dim=-1)
+        output_var = output.var(dim=-1)
+        print(f'Output mean: {output_mean}')
+        print(f'Output variance: {output_var}')
+        self.assertTrue(torch.allclose(output_mean, torch.zeros_like(output_mean), atol=1e-6), 'Mean should be close to zero.')
+        self.assertTrue(torch.allclose(output_var, torch.ones_like(output_var), atol=1e-6), 'Variance should be close to 1')
+
+
 if __name__ == '__main__':
     unittest.main()
