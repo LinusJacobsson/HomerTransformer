@@ -190,5 +190,17 @@ class TestLayerNorm(unittest.TestCase):
         self.assertTrue(torch.allclose(self.layer_norm.gamma, torch.ones_like(self.layer_norm.gamma), atol=1e-9), 'Gamma should be initialized to one.')
         self.assertTrue(torch.allclose(self.layer_norm.beta, torch.zeros_like(self.layer_norm.beta), atol=1e-9), 'Beta should be initialized to zero.')
 
+    
+    def test_gradients(self):
+        batch_size, context_length = 5, 5
+        x = torch.randn(batch_size, context_length, self.d_model, requires_grad=True) # Shape (5, 5, 16)
+        output = self.layer_norm(x)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(x.grad, 'Gradient for x should exist.')
+        self.assertIsNotNone(self.layer_norm.gamma.grad, 'Gradient for gamma should exist.')
+        self.assertIsNotNone(self.layer_norm.beta.grad, 'Gradient for beta should exist.')
+
+        
 if __name__ == '__main__':
     unittest.main()
