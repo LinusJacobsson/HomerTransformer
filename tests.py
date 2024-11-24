@@ -184,5 +184,11 @@ class TestLayerNorm(unittest.TestCase):
         self.assertTrue(torch.allclose(output_var, torch.ones_like(output_var), atol=1e-6), 'Variance should be close to 1')
 
 
+    def test_learnable_parameters(self):
+        self.assertTrue(self.layer_norm.beta.requires_grad, 'Beta should be a learnable parameter.')
+        self.assertTrue(self.layer_norm.gamma.requires_grad, 'Gamma should a learnable parameter')
+        self.assertTrue(torch.allclose(self.layer_norm.gamma, torch.ones_like(self.layer_norm.gamma), atol=1e-9), 'Gamma should be initialized to one.')
+        self.assertTrue(torch.allclose(self.layer_norm.beta, torch.zeros_like(self.layer_norm.beta), atol=1e-9), 'Beta should be initialized to zero.')
+
 if __name__ == '__main__':
     unittest.main()
