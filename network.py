@@ -30,6 +30,23 @@ class FeedForwardBlock(nn.Module):
         x = self.linear2(x)
         return x
 
+
+class LayerNorm(nn.Module):
+    def __init__(self, d_model, epsilon=1e-6):
+        super().__init__()
+        self.epsilon = epsilon
+        self.d_model = d_model
+        self.gamma = nn.Parameter(torch.ones(d_model))
+        self.beta = nn.Parameter(torch.zeros(d_model))
+
+    
+    def forward(self, x):
+        x_mean = torch.mean(x, -1)
+        x_variance = torch.var(x, -1)
+        normal_term = torch.sqrt(x_variance**2 + self.epsilon) * self.gamma
+        x = (x - x_mean) * normal_term + self.beta
+        return x
+
 class ApproxGELU(nn.Module):
     def __init__(self):
         super().__init__()
