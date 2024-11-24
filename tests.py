@@ -140,7 +140,6 @@ class TestFeedForwardBlock(unittest.TestCase):
         self.assertTrue(torch.all(torch.isfinite(output)), 'Output contain Nan or None values')
 
 
-
     def test_gradients(self):
         x = torch.randn(4, 6, self.d_model, requires_grad=True) # batch size = 4, context length = 6
         output = self.block(x)
@@ -150,6 +149,12 @@ class TestFeedForwardBlock(unittest.TestCase):
         for params in self.block.parameters():
             self.assertIsNotNone(params.grad, 'Gradients should exist for all parameters.')
 
+
+    def test_empty_input(self):
+        x = torch.empty(0, 0, self.d_model) # empty tensor
+        with self.assertRaises(RuntimeError):
+            self.block(x)
+    
     
 if __name__ == '__main__':
     unittest.main()
