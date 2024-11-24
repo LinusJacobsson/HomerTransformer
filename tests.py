@@ -132,5 +132,14 @@ class TestFeedForwardBlock(unittest.TestCase):
         output = self.block(x)
         self.assertEqual(output.shape, x.shape, 'Shape should be the same after forward pass')
 
+    
+    def test_forward_values(self):
+
+        x  =torch.randn(2, 5, self.d_model) # Batch size = 2, context length = 5
+        output = self.block(x)
+        self.assertTrue(torch.all(torch.isfinite(output)), 'Output contain Nan or None values')
+
+
+
 if __name__ == '__main__':
     unittest.main()
