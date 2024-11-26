@@ -265,15 +265,25 @@ class TestEmbeddingLayer(unittest.TestCase):
     def setUp(self):
         self.vocab_size = 50
         self.embedding_dim = 100
+        self.batch_size = 32
+        self.sequence_length = 10
         self.layer = EmbeddingLayer(self.vocab_size, self.embedding_dim)
+
 
     
     def test_output_shape(self):
-        batch_size = 10
-        sequence_length = 8
-        tokens = torch.randint(0, self.vocab_size, (batch_size, sequence_length), dtype=torch.long)
+        tokens = torch.randint(0, self.vocab_size, (self.batch_size, self.sequence_length), dtype=torch.long)
         output = self.layer(tokens)
-        self.assertEqual(output.shape, (batch_size, sequence_length, self.embedding_dim), 'The dimensions are not correct.')
+        self.assertEqual(output.shape, (self.batch_size, self.sequence_length, self.embedding_dim), 'The dimensions are not correct.')
+
+    
+    def test_gradients(self):
+        tokens = torch.randint(0, self.vocab_size, (self.batch_size, self.sequence_length), dtype=torch.long)
+        output = self.layer(tokens)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(self.layer.embeddings.grad, 'Gradients should exist.')
+        
 
 if __name__ == '__main__':
     loader = unittest.TestLoader()
