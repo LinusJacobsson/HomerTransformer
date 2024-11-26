@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm
+from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm, EmbeddingLayer
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -259,12 +259,28 @@ class TestAddAndNorm(unittest.TestCase):
         self.assertTrue(torch.allclose(output.mean(), torch.tensor(0.0), atol=1e-6), "Mean should be 0 after normalization")
         self.assertTrue(output.var(unbiased=False).isnan() or output.var(unbiased=False) == 0, "Variance should be zero for scalar input.")
 
+
+class TestEmbeddingLayer(unittest.TestCase):
+
+    def setUp(self):
+        self.vocab_size = 50
+        self.embedding_dim = 100
+        self.layer = EmbeddingLayer(self.vocab_size, self.embedding_dim)
+
+    
+    def test_output_shape(self):
+        batch_size = 10
+        sequence_length = 8
+        tokens = torch.randint(0, self.vocab_size, (batch_size, sequence_length), dtype=torch.long)
+        output = self.layer(tokens)
+        self.assertEqual(output.shape, (batch_size, sequence_length, self.embedding_dim), 'The dimensions are not correct.')
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
     # Load specific test methods
     tests = loader.loadTestsFromNames([
-        'tests.TestAddAndNorm'
+        'tests.TestEmbeddingLayer'
     ])
 
     # Run the selected tests
