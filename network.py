@@ -74,7 +74,7 @@ class EmbeddingLayer(nn.Module):
 
     
     def forward(self, tokens):
-        return self.embedding[tokens]
+        return self.embeddings[tokens]
 
 
 class ApproxGELU(nn.Module):
