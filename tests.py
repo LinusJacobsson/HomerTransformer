@@ -290,7 +290,12 @@ class TestEmbeddingLayer(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.layer(tokens)
 
-            
+
+    def test_single_token(self):
+        token = torch.tensor([5], dtype=torch.long)
+        output = self.layer(token)
+        self.assertEqual(output.shape, (1, self.embedding_dim), 'Should be a single row with embedding_dim integers.')
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
