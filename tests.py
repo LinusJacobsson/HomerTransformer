@@ -283,8 +283,14 @@ class TestEmbeddingLayer(unittest.TestCase):
         loss = output.sum()
         loss.backward()
         self.assertIsNotNone(self.layer.embeddings.grad, 'Gradients should exist.')
-        
 
+
+    def test_out_of_vocab(self):
+        tokens = torch.tensor([[0, 1, self.vocab_size]])
+        with self.assertRaises(IndexError):
+            self.layer(tokens)
+
+            
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
