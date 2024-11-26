@@ -296,6 +296,13 @@ class TestEmbeddingLayer(unittest.TestCase):
         output = self.layer(token)
         self.assertEqual(output.shape, (1, self.embedding_dim), 'Should be a single row with embedding_dim integers.')
 
+
+    def test_empty_input(self):
+        token = torch.tensor([], dtype=torch.long)
+        output = self.layer(token)
+        self.assertEqual(output.shape, (0, self.embedding_dim), 'Should have size (0, embedding_dim)')
+
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
 
