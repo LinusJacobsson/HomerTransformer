@@ -67,6 +67,15 @@ class AddAndNorm(nn.Module):
         return self.norm(x + sublayer_output)
 
 
+class EmbeddingLayer(nn.Module):
+    def __init__(self, vocab_size, embedding_dim):
+        super().__init__()
+        self.embeddings = nn.Parameter(torch.randn(vocab_size, embedding_dim) * 0.01)
+
+    
+    def forward(self, tokens):
+        return self.embedding[tokens]
+
 
 class ApproxGELU(nn.Module):
     def __init__(self):
