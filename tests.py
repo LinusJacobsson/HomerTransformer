@@ -328,10 +328,21 @@ class ScaledDotProductAttentionTest(unittest.TestCase):
         mask[:, :, -1] = 0
 
         _, attention_weights = self.attention(query, key, value, mask=mask)
-        print(attention_weights)
+        #print(attention_weights)
         self.assertTrue(torch.all(attention_weights[:, :, -1] == 0))
 
 
+    def test_normalization(self):
+        batch_size, seq_len_q, seq_len_k = 4, 6, 8
+        query = torch.randn(batch_size, seq_len_q, self.d_k)
+        key = torch.randn(batch_size, seq_len_k, self.d_k)
+        value = torch.randn(batch_size, seq_len_k, self.d_k)
+
+        _, attention_weights = self.attention(query, key, value)
+        print(f'Attention_weights: {attention_weights}')
+        weight_sum = attention_weights.sum(dim=-1)
+        print(f'Sum: {weight_sum}')
+        self.assertTrue(torch.allclose(weight_sum, torch.ones_like(weight_sum)))
 
 if __name__ == '__main__':
     unittest.main()
