@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm, EmbeddingLayer
+from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm, EmbeddingLayer, ScaledDotProductAttention
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -303,14 +303,23 @@ class TestEmbeddingLayer(unittest.TestCase):
         self.assertEqual(output.shape, (0, self.embedding_dim), 'Should have size (0, embedding_dim)')
 
 
+class ScaledDotProductAttentionTest(unittest.TestCase):
+    def setUp(self):
+        self.d_k = 16
+        self.attention = ScaledDotProductAttention(d_k=self.d_k)
+
+    def test_output_shape(self):
+        batch_size, seq_len_q, seq_len_k, d_v = 8, 10, 15, 32
+        query = torch.randn(batch_size, seq_len_q, self.d_k)
+        key = torch.randn(batch_size, seq_len_k, self.d_k)
+        value = torch.randn(batch_size, seq_len_k, d_v)
+
+        output, _ = self.attention(query, key, value)
+        self.assertEqual(output.shape, (batch_size, seq_len_q, d_v))
+
+
+
+
+
 if __name__ == '__main__':
-    loader = unittest.TestLoader()
-
-    # Load specific test methods
-    tests = loader.loadTestsFromNames([
-        'tests.TestEmbeddingLayer'
-    ])
-
-    # Run the selected tests
-    runner = unittest.TextTestRunner()
-    runner.run(tests)
+    unittest.main()
