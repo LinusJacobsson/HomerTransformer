@@ -87,6 +87,16 @@ class ApproxGELU(nn.Module):
         return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
     
 
+    def forward(self, x):
+        # Approximate according to: https://arxiv.org/pdf/1606.08415
+        # Corrected GELU approximation formula
+        term = torch.sqrt(torch.tensor(2.0) / torch.pi) * (x + 0.044715 * x**3)
+        term = torch.clamp(term, -50, 50)
+        return 0.5 * x * (1 + self.tanh(term)) 
+    
+
+    
+
 class ScaledDotProductAttention(nn.Module):
     def __init__(self, d_k):
         super().__init__()
@@ -105,13 +115,5 @@ class ScaledDotProductAttention(nn.Module):
         return output, attention_weights
     
 
-
-    def forward(self, x):
-        # Approximate according to: https://arxiv.org/pdf/1606.08415
-        # Corrected GELU approximation formula
-        term = torch.sqrt(torch.tensor(2.0) / torch.pi) * (x + 0.044715 * x**3)
-        term = torch.clamp(term, -50, 50)
-        return 0.5 * x * (1 + self.tanh(term)) 
-    
 
 
