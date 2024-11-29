@@ -318,6 +318,18 @@ class ScaledDotProductAttentionTest(unittest.TestCase):
         self.assertEqual(output.shape, (batch_size, seq_len_q, d_v))
 
 
+    def test_masking(self):
+        batch_size, seq_len_q, seq_len_k = 4, 5, 5
+        query = torch.randn(batch_size, seq_len_q, self.d_k)
+        key = torch.randn(batch_size, seq_len_k, self.d_k)
+        value = torch.randn(batch_size, seq_len_k, self.d_k)
+
+        mask = torch.ones(batch_size, seq_len_q, seq_len_k)
+        mask[:, :, -1] = 0
+
+        _, attention_weights = self.attention(query, key, value, mask=mask)
+        print(attention_weights)
+        self.assertTrue(torch.all(attention_weights[:, :, -1] == 0))
 
 
 
