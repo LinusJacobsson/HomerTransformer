@@ -344,5 +344,20 @@ class ScaledDotProductAttentionTest(unittest.TestCase):
         print(f'Sum: {weight_sum}')
         self.assertTrue(torch.allclose(weight_sum, torch.ones_like(weight_sum)))
 
+    
+    def test_gradients(self):
+        batch_size, seq_len_q, seq_len_k = 16, 32, 32
+        query = torch.randn(batch_size, seq_len_q, self.d_k, requires_grad=True)
+        key = torch.randn(batch_size, seq_len_k, self.d_k, requires_grad=True)
+        value = torch.randn(batch_size, seq_len_k, self.d_k, requires_grad=True)
+
+        output, _ = self.attention(query, key, value)
+        loss = output.sum()
+        loss.backward()
+        self.assertIsNotNone(query.grad, 'Gradients for query should exist.')
+        self.assertIsNotNone(key.grad, 'Gradients for key should exist.')
+        self.assertIsNotNone(value.grad, 'Gradients for value should exist.')    
+
+
 if __name__ == '__main__':
     unittest.main()
