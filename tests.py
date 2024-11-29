@@ -358,6 +358,27 @@ class ScaledDotProductAttentionTest(unittest.TestCase):
         self.assertIsNotNone(key.grad, 'Gradients for key should exist.')
         self.assertIsNotNone(value.grad, 'Gradients for value should exist.')    
 
+    def test_identity_input(self):
+        batch_size = 6
+        seq_len = 10
+
+        # Create Q, K as scaled identity matrices
+        query = torch.eye(seq_len).unsqueeze(0).repeat(batch_size, 1, 1) * 100  # Scale by 100 for strong diagonal dominance
+        key = query.clone()
+        # Create random V
+        value = torch.randn(batch_size, seq_len, self.d_k)
+
+        # Forward pass
+        output, attention_weights = self.attention(query, key, value)
+
+        # Check that the diagonal elements have the highest attention weights
+        max_indices = attention_weights.argmax(dim=-1)  # Max attention per query
+        expected_indices = torch.arange(seq_len).unsqueeze(0).repeat(batch_size, 1)  # Diagonal indices
+
+        assert torch.all(max_indices == expected_indices), (
+            "Diagonal elements should have the highest attention weight"
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
