@@ -77,6 +77,7 @@ class EmbeddingLayer(nn.Module):
         return self.embeddings[tokens]
 
 
+
 class ApproxGELU(nn.Module):
     def __init__(self):
         super().__init__()
@@ -85,6 +86,25 @@ class ApproxGELU(nn.Module):
     def tanh(self, x):
         return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
     
+
+class ScaledDotProductAttention(nn.Module):
+    def __init__(self, d_k):
+        super().__init__()
+        self.scale = torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+
+
+    def forward(self, query, key, value, mask=None):
+        scores = torch.matmul(query, key.transpose(-2, -1)) / self.scale
+
+        if mask is not None:
+            scores = scores.masked_fill(mask==0, float('-inf'))
+
+        attention_weights = torch.softmax(scores, dim=-1)
+
+        output = torch.matmul(attention_weights, value)
+        return output, attention_weights
+    
+
 
     def forward(self, x):
         # Approximate according to: https://arxiv.org/pdf/1606.08415
