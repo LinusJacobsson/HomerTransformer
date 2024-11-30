@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import gradcheck
 
-from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm, EmbeddingLayer, ScaledDotProductAttention
+from network import LinearLayer, ApproxGELU, FeedForwardBlock, LayerNorm, AddAndNorm, EmbeddingLayer, ScaledDotProductAttention, PositionalEncoding
 
 class TestLinearLayer(unittest.TestCase):
 
@@ -378,6 +378,21 @@ class ScaledDotProductAttentionTest(unittest.TestCase):
         assert torch.all(max_indices == expected_indices), (
             "Diagonal elements should have the highest attention weight"
         )
+
+
+class TestPositionalEncoding(unittest.TestCase):
+    def setUp(self):
+        self.d_model = 6
+        self.max_len = 100
+        self.embed = PositionalEncoding(d_model=self.d_model, max_len=self.max_len)
+
+    def test_output_shape(self):
+        seq_len = 10
+        batch_size = 4
+        x = torch.randn(batch_size, seq_len, self.d_model)
+        output = self.embed(x)
+        self.assertEqual(x.shape, output.shape, 'Output shape must match x.')
+
 
 
 if __name__ == '__main__':
