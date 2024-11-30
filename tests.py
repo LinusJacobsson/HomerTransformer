@@ -431,5 +431,13 @@ class TestPositionalEncoding(unittest.TestCase):
         pe = PositionalEncoding(d_model, self.max_len)
         self.assertEqual(pe.pe.shape, (self.max_len, d_model), 'Expected shapes do not match.')
 
+    
+    def test_large_seq_len(self):
+        d_model = 4
+        max_len = 10_000
+        pe = PositionalEncoding(d_model, max_len)
+        self.assertEqual(pe.pe.shape, (max_len, d_model), 'Expected {(max_len, d_model)} but got {(pe.pe.shape[0], pe.pe.shape[1])}')
+
+        
 if __name__ == '__main__':
     unittest.main()
