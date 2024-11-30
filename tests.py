@@ -424,5 +424,12 @@ class TestPositionalEncoding(unittest.TestCase):
         expected_output = x[:, 0, :] + self.embed.pe[0]
         self.assertTrue(torch.allclose(output[:, 0,:], expected_output, atol=1e-6), "The output did not match the expected output.")
 
+
+    def test_small_d_model(self):
+        d_model = 2
+        seq_len = 5
+        pe = PositionalEncoding(d_model, self.max_len)
+        self.assertEqual(pe.pe.shape, (self.max_len, d_model), 'Expected shapes do not match.')
+
 if __name__ == '__main__':
     unittest.main()
