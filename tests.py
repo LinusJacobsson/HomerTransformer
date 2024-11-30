@@ -395,13 +395,34 @@ class TestPositionalEncoding(unittest.TestCase):
 
 
     def test_encoded_values(self):
-        # Check a single index.
+        # Check index 0
         expected_pos0 = torch.zeros(self.d_model)
         expected_pos0[0::2] = torch.sin(torch.tensor(0))
         expected_pos0[1::2] = torch.cos(torch.tensor(0))
         self.assertTrue(torch.allclose(self.embed.pe[0], expected_pos0, atol=1e-6), "The embedding is not correct.")
 
-        
+        # Check position 1
+        position = 1
+        div_term = torch.exp(
+            torch.arange(0, self.d_model, 2)
+            * -(torch.log(torch.tensor(10000.0)) / self.d_model)
+        )
+        expected_pos1 = torch.zeros(self.d_model)
+        expected_pos1[0::2] = torch.sin(position * div_term)
+        expected_pos1[1::2] = torch.cos(position * div_term)
+        self.assertTrue(
+            torch.allclose(self.embed.pe[1], expected_pos1, atol=1e-6),
+            f"Positional encoding for position 1 is incorrect. Expected {expected_pos1}, got {self.embed.pe[1]}",
+        )
+
+
+    def test_add_encoding(self):
+        batch_size = 4
+        seq_len = 5
+        x = torch.ones(batch_size, seq_len, self.d_model)
+        output = self.embed(x)
+        expected_output = x[:, 0, :] + self.embed.pe[0]
+        self.assertTrue(torch.allclose(output[:, 0,:], expected_output, atol=1e-6), "The output did not match the expected output.")
 
 if __name__ == '__main__':
     unittest.main()
