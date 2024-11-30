@@ -394,6 +394,14 @@ class TestPositionalEncoding(unittest.TestCase):
         self.assertEqual(x.shape, output.shape, 'Output shape must match x.')
 
 
+    def test_encoded_values(self):
+        # Check a single index.
+        expected_pos0 = torch.zeros(self.d_model)
+        expected_pos0[0::2] = torch.sin(torch.tensor(0))
+        expected_pos0[1::2] = torch.cos(torch.tensor(0))
+        self.assertTrue(torch.allclose(self.embed.pe[0], expected_pos0, atol=1e-6), "The embedding is not correct.")
+
+        
 
 if __name__ == '__main__':
     unittest.main()
