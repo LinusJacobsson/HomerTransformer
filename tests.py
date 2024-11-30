@@ -438,6 +438,13 @@ class TestPositionalEncoding(unittest.TestCase):
         pe = PositionalEncoding(d_model, max_len)
         self.assertEqual(pe.pe.shape, (max_len, d_model), 'Expected {(max_len, d_model)} but got {(pe.pe.shape[0], pe.pe.shape[1])}')
 
-        
+    
+    def test_empty_input(self):
+        x = torch.empty(0, 0, self.d_model)
+        output = self.embed(x)
+        self.assertEqual(output.shape, x.shape, f"Expected empty input to produce shape {x.shape}, got {output.shape}",
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
