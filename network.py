@@ -76,25 +76,6 @@ class EmbeddingLayer(nn.Module):
     def forward(self, tokens):
         return self.embeddings[tokens]
 
-
-
-class ApproxGELU(nn.Module):
-    def __init__(self):
-        super().__init__()
-    
-
-    def tanh(self, x):
-        return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
-    
-
-    def forward(self, x):
-        # Approximate according to: https://arxiv.org/pdf/1606.08415
-        # Corrected GELU approximation formula
-        term = torch.sqrt(torch.tensor(2.0) / torch.pi) * (x + 0.044715 * x**3)
-        term = torch.clamp(term, -50, 50)
-        return 0.5 * x * (1 + self.tanh(term)) 
-    
-
     
 
 class ScaledDotProductAttention(nn.Module):
@@ -116,4 +97,32 @@ class ScaledDotProductAttention(nn.Module):
     
 
 
+class ApproxGELU(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
 
+    def tanh(self, x):
+        return (torch.exp(x) - torch.exp(-x)) / (torch.exp(x) + torch.exp(-x))
+    
+
+    def forward(self, x):
+        # Approximate according to: https://arxiv.org/pdf/1606.08415
+        # Corrected GELU approximation formula
+        term = torch.sqrt(torch.tensor(2.0) / torch.pi) * (x + 0.044715 * x**3)
+        term = torch.clamp(term, -50, 50)
+        return 0.5 * x * (1 + self.tanh(term)) 
+    
+
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=5000):
+        super().__init__()
+        position = torch.arange(0, max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * -(torch.log(torch.tensor(10000.0)) / d_model))
+        pe = torch.zeros(max_len, d_model)
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer("pe", pe)
+
+    def forward(self, x):
+        return x + self.pe[:x.size(1)]
