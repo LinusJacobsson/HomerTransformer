@@ -6,7 +6,7 @@ import torch.nn as nn
 class LinearLayer(nn.Module):
     def __init__(self, input_dim, output_dim, use_bias=True):
         super().__init__()
-        self.weights = nn.Parameter(torch.randn(input_dim, output_dim))
+        self.weights = nn.Parameter(torch.randn(input_dim, output_dim) * 0.01)
         if use_bias:
             self.bias = nn.Parameter(torch.zeros(output_dim))
         else:
@@ -153,7 +153,7 @@ class MultiHeadedAttention(nn.Module):
 
     
     def forward(self, query, key, value, mask=None):
-        batch_size = query.size[0]
+        batch_size = query.size(0)
 
         # Projections
         query = self.query_proj(query).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2) # Shape: (batch_size, seq_len, num_heads, d_k)
@@ -179,17 +179,18 @@ class DecoderBlock(nn.Module):
 
     
     def forward(self, x, mask=None):
-        attention_output = self.attentiom(x)
+        attention_output, _ = self.attentiom(x, x, x, mask)
         norm1 = self.add_and_norm1(x, attention_output)
         feed_forward_output = self.feed_forward(norm1)
-        normed_output = self.add_and_norm2(x, feed_forward_output)
-
+        normed_output = self.add_and_norm2(norm1, feed_forward_output)
+        return normed_output
+    
 
 class TransformerDecoder(nn.Module):
     def __init__(self, vocab_size, d_model, num_heads, d_ff, num_layers, max_len=5_000):
         super().__init__()
         self.embedding = EmbeddingLayer(vocab_size=vocab_size, embedding_dim=d_model)
-        self.positionl_encoding = PositionalEncoding(d_model=d_model, max_len=max_len)
+        self.positional_encoding = PositionalEncoding(d_model=d_model, max_len=max_len)
         self.layers = nn.ModuleList([DecoderBlock(d_model=d_model, num_heads=num_heads, d_ff=d_ff) for _ in range(num_layers)])
         self.output = LinearLayer(d_model, vocab_size)
 
@@ -199,5 +200,6 @@ class TransformerDecoder(nn.Module):
 
         for layer in self.layers:
             x = layer(x, mask)
-            
-        return self.output(x)
+
+        # Project to vocabulary size
+        return torch.log_softmax(self.output(x), dim=-1)
