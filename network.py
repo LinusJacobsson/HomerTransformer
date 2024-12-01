@@ -4,17 +4,22 @@ import torch.nn as nn
 
 
 class LinearLayer(nn.Module):
-    def __init__(self, input_dim, output_dim):
+    def __init__(self, input_dim, output_dim, use_bias=True):
         super().__init__()
         self.weights = nn.Parameter(torch.randn(input_dim, output_dim))
-        self.bias = nn.Parameter(torch.zeros(output_dim))
-
+        if use_bias:
+            self.bias = nn.Parameter(torch.zeros(output_dim))
+        else:
+            self.bias = None
 
     def forward(self, x):
         if x.shape[0] == 0:
             raise RuntimeError("Tensor has no data (empty batch dimension)")
-        return torch.matmul(x, self.weights) + self.bias
-
+        
+        if self.bias is not None:
+            return torch.matmul(x, self.weights) + self.bias
+        else:
+            return torch.matmul(x, self.weights)
 
 class FeedForwardBlock(nn.Module):
     def __init__(self, d_model, d_ff):
