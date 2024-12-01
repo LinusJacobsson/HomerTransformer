@@ -168,4 +168,18 @@ class MultiHeadedAttention(nn.Module):
 
         return output, attention_weights
 
-        
+
+class DecoderBlock(nn.Module):
+    def __init__(self, d_model, num_heads, d_ff):
+        super().__init__()
+        self.attentiom = MultiHeadedAttention(d_model=d_model, num_heads=num_heads)
+        self.add_and_norm1 = AddAndNorm(d_model=d_model)
+        self.feed_forward = FeedForwardBlock(d_model=d_model, d_ff=d_ff)
+        self.add_and_norm2 = AddAndNorm(d_model=d_model)
+
+    
+    def forward(self, x, mask=None):
+        attention_output = self.attentiom(x)
+        norm1 = self.add_and_norm1(x, attention_output)
+        feed_forward_output = self.feed_forward(norm1)
+        normed_output = self.add_and_norm2(x, feed_forward_output)
