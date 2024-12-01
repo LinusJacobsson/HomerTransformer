@@ -183,3 +183,21 @@ class DecoderBlock(nn.Module):
         norm1 = self.add_and_norm1(x, attention_output)
         feed_forward_output = self.feed_forward(norm1)
         normed_output = self.add_and_norm2(x, feed_forward_output)
+
+
+class TransformerDecoder(nn.Module):
+    def __init__(self, vocab_size, d_model, num_heads, d_ff, num_layers, max_len=5_000):
+        super().__init__()
+        self.embedding = EmbeddingLayer(vocab_size=vocab_size, embedding_dim=d_model)
+        self.positionl_encoding = PositionalEncoding(d_model=d_model, max_len=max_len)
+        self.layers = nn.ModuleList([DecoderBlock(d_model=d_model, num_heads=num_heads, d_ff=d_ff) for _ in range(num_layers)])
+        self.output = LinearLayer(d_model, vocab_size)
+
+    def forward(self, x, mask=None):
+        x = self.embedding(x)
+        x = self.positional_encoding(x)
+
+        for layer in self.layers:
+            x = layer(x, mask)
+            
+        return self.output(x)
