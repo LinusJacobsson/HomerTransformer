@@ -131,3 +131,41 @@ class PositionalEncoding(nn.Module):
 
     def forward(self, x):
         return x + self.pe[:x.size(1)]
+
+
+class MultiHeadedAttention(nn.Module):
+    def __init__(self, d_model, num_heads, use_bias=False):
+        super().__init__()
+        assert d_model % num_heads == 0, 'd_model must be divisible by num_heads'
+
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+
+        self.query_proj = LinearLayer(self.d_model, self.d_model, use_bias=use_bias)
+        self.key_proj = LinearLayer(self.d_model, self.d_model, use_bias=use_bias)
+        self.value_proj = LinearLayer(self.d_model, self.d_model, use_bias=use_bias)
+
+        # Output
+        self.output_proj = LinearLayer(self.d_model, self.d_model, use_bias=use_bias)
+
+        self.attention = ScaledDotProductAttention(self.d_k)
+
+    
+    def forward(self, query, key, value, mask=None):
+        batch_size = query.size[0]
+
+        # Projections
+        query = self.query_proj(query).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2) # Shape: (batch_size, seq_len, num_heads, d_k)
+        key = self.key_proj(key).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        value = self.value_proj(value).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+
+        attention_output, attention_weights = self.attention(query, key, value, mask) # Shape: (batch_size, num_heads, seq_len, seq_len)
+
+        # Concatenate and project
+        attention_output = attention_output.transpose(1, 2).contiguous().view(batch_size, -1, self.num_heads * self.d_k) # Shape: (batch_size, seq_len, d_model)
+        output = self.output_proj(attention_output)
+
+        return output, attention_weights
+
+        
