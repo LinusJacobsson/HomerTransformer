@@ -1,52 +1,50 @@
-name: "Feature Request"
+name: "Issue"
 description: "Suggest a new feature or enhancement"
-title: "[FEATURE]: "
+title: ""
 labels: ["enhancement"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        ## Feature/Implementation Request Form
+        ## Issue Request Form
         Please fill out the following sections with as much detail as you can.
 
   - type: input
     id: motivation
     attributes:
-      label: "1. Motivation / Source"
+      label: "1. Motivation"
       description: "Explain who or what prompted this feature request. What's the underlying need?"
-      placeholder: "This request came from management because..."
-
-  - type: textarea
-    id: description
-    attributes:
-      label: "2. Description"
-      description: "Describe the feature details or how it should function."
-      placeholder: "It should..."
+      placeholder: "This request came from XXX to improve..."
 
   - type: textarea
     id: intended_outcome
     attributes:
-      label: "3. Intended Outcome"
-      description: "What does success look like for this feature? Provide acceptance criteria if possible."
+      label: "2. Intended Outcome"
+      description: "What does success look like for this feature?"
       placeholder: "When implemented, it will..."
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "3. Steps"
+      description: "If currently known, write the different steps."
+      placeholder: "Step 1: ...."
 
   - type: textarea
     id: consequences
     attributes:
-      label: "4. Consequences / Dependencies"
-      description: "List any other services, repositories, or teams that will be affected by this feature."
+      label: "4. Consequences"
+      description: "List any other services or repositories that will be affected by this feature."
       placeholder: "Requires changes in..."
 
   - type: textarea
     id: additional_context
     attributes:
       label: "(Optional) Additional Context"
-      description: "Add any extra details, links, mockups, or references that might help."
+      description: "Add any extra details that might help."
       render: yaml  # or 'plaintext' if you prefer
       placeholder: |
-        # Provide URLs or references here:
-        - Link to design mockups
-        - Related issues
-        - Technical docs
+        # Extra material
+        - Links
 
