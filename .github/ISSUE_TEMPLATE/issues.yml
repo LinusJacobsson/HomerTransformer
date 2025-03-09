@@ -1,4 +1,4 @@
-name: "Issue"
+name: "Tzeract Issue"
 description: "Suggest a new feature or enhancement"
 title: "Feature: "
 labels: ["enhancement"]
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Issue Request Form
+        ## Tzeract Issue Request Form
         Please fill out the following sections with as much detail as you can.
 
   - type: input
