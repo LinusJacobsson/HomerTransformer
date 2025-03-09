@@ -1,6 +1,6 @@
 name: "Issue"
 description: "Suggest a new feature or enhancement"
-title: ""
+title: "Feature: "
 labels: ["enhancement"]
 
 body:
