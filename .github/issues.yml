@@ -1,0 +1,52 @@
+name: "Feature Request"
+description: "Suggest a new feature or enhancement"
+title: "[FEATURE]: "
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature/Implementation Request Form
+        Please fill out the following sections with as much detail as you can.
+
+  - type: input
+    id: motivation
+    attributes:
+      label: "1. Motivation / Source"
+      description: "Explain who or what prompted this feature request. What's the underlying need?"
+      placeholder: "This request came from management because..."
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "2. Description"
+      description: "Describe the feature details or how it should function."
+      placeholder: "It should..."
+
+  - type: textarea
+    id: intended_outcome
+    attributes:
+      label: "3. Intended Outcome"
+      description: "What does success look like for this feature? Provide acceptance criteria if possible."
+      placeholder: "When implemented, it will..."
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: "4. Consequences / Dependencies"
+      description: "List any other services, repositories, or teams that will be affected by this feature."
+      placeholder: "Requires changes in..."
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "(Optional) Additional Context"
+      description: "Add any extra details, links, mockups, or references that might help."
+      render: yaml  # or 'plaintext' if you prefer
+      placeholder: |
+        # Provide URLs or references here:
+        - Link to design mockups
+        - Related issues
+        - Technical docs
+
